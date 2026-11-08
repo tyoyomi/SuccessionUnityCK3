@@ -1,0 +1,50 @@
+# Succession Unity — append-only vanilla hooks (never overwrite effect/trigger on vanilla roots)
+
+on_death = {
+	on_actions = { su_on_death }
+}
+
+su_on_death = {
+	trigger = {
+		has_variable = su_pact_active
+	}
+	effect = {
+		su_on_pact_holder_death_effect = yes
+	}
+}
+
+on_game_start = {
+	on_actions = { su_on_game_start }
+}
+
+su_on_game_start = {
+	effect = {
+		# Hygiene: nothing sticky required for v0.1.0
+	}
+}
+
+yearly_playable_pulse = {
+	on_actions = {
+		su_soft_glue_pulse
+		su_pending_choice_pulse
+	}
+}
+
+su_soft_glue_pulse = {
+	trigger = {
+		has_variable = su_soft_glue_active
+	}
+	effect = {
+		su_soft_glue_yearly_tick_effect = yes
+	}
+}
+
+# Backup if delayed on_death heir event was flaky
+su_pending_choice_pulse = {
+	trigger = {
+		su_heir_qualifies_for_unity_choice = yes
+	}
+	effect = {
+		su_try_fire_pending_unity_choice_effect = yes
+	}
+}

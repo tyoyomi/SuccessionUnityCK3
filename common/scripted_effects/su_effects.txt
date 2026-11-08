@@ -1,0 +1,486 @@
+# Succession Unity — scripted effects (heavy logic; events stay thin)
+
+su_enable_pact_effect = {
+	set_variable = {
+		name = su_pact_active
+		value = yes
+	}
+	if = {
+		limit = { exists = dynasty }
+		dynasty = {
+			set_variable = {
+				name = su_pact_holder
+				value = root
+			}
+		}
+	}
+}
+
+su_clear_pact_effect = {
+	if = {
+		limit = { has_variable = su_pact_active }
+		remove_variable = su_pact_active
+	}
+	if = {
+		limit = {
+			exists = dynasty
+			dynasty = { has_variable = su_pact_holder }
+		}
+		dynasty = { remove_variable = su_pact_holder }
+	}
+}
+
+su_clear_pending_choice_effect = {
+	if = {
+		limit = { has_variable = su_unity_choice_pending }
+		remove_variable = su_unity_choice_pending
+	}
+	add_character_flag = {
+		flag = su_unity_choice_done
+		years = 2
+	}
+}
+
+### Compensate one sibling (scope:su_sibling, root = heir) after top-tier loss / titleless risk
+su_compensate_sibling_effect = {
+	# 1) Keep non-top-tier titles (already held — do nothing)
+	# 2) If titleless OR lost only meaningful land: grant a spare county from heir domain
+	if = {
+		limit = {
+			OR = {
+				is_landed = no
+				NOR = {
+					any_held_title = { tier = tier_county }
+					any_held_title = { tier = tier_duchy }
+					any_held_title = { tier >= tier_kingdom }
+				}
+			}
+		}
+		if = {
+			limit = {
+				root = {
+					any_held_title = {
+						tier = tier_county
+						count >= 2
+						NOT = { this = root.capital_county }
+					}
+				}
+			}
+			root = {
+				random_held_title = {
+					limit = {
+						tier = tier_county
+						NOT = { this = root.capital_county }
+					}
+					save_scope_as = su_comp_county
+				}
+			}
+			if = {
+				limit = { exists = scope:su_comp_county }
+				create_title_and_vassal_change = {
+					type = granted
+					save_scope_as = su_comp_change
+					add_claim_on_loss = no
+				}
+				scope:su_comp_county = {
+					change_title_holder = {
+						holder = scope:su_sibling
+						change = scope:su_comp_change
+					}
+				}
+				resolve_title_and_vassal_change = scope:su_comp_change
+				scope:su_sibling = {
+					add_opinion = {
+						target = root
+						modifier = su_compensated_sibling_opinion
+					}
+				}
+			}
+			else = {
+				# 3) Gold fallback
+				root = {
+					if = {
+						limit = { gold >= su_sibling_gold_comp }
+						remove_short_term_gold = su_sibling_gold_comp
+					}
+				}
+				scope:su_sibling = {
+					add_gold = su_sibling_gold_comp
+					add_opinion = {
+						target = root
+						modifier = su_compensated_sibling_opinion
+					}
+				}
+			}
+		}
+		else = {
+			root = {
+				if = {
+					limit = { gold >= su_sibling_gold_comp }
+					remove_short_term_gold = su_sibling_gold_comp
+				}
+			}
+			scope:su_sibling = {
+				add_gold = su_sibling_gold_comp
+				add_opinion = {
+					target = root
+					modifier = su_compensated_sibling_opinion
+				}
+			}
+		}
+	}
+	else = {
+		# Still give mild consolation when they lost a top crown but kept lesser land
+		scope:su_sibling = {
+			add_opinion = {
+				target = root
+				modifier = su_compensated_sibling_opinion
+			}
+		}
+	}
+}
+
+su_transfer_sibling_top_titles_to_root_effect = {
+	# this = sibling; root = heir
+	save_scope_as = su_sibling
+	if = {
+		limit = {
+			any_held_title = { tier >= tier_kingdom }
+		}
+		create_title_and_vassal_change = {
+			type = conquered
+			save_scope_as = su_unity_change
+			add_claim_on_loss = no
+		}
+		every_held_title = {
+			limit = { tier >= tier_kingdom }
+			change_title_holder = {
+				holder = root
+				change = scope:su_unity_change
+			}
+		}
+		resolve_title_and_vassal_change = scope:su_unity_change
+		su_compensate_sibling_effect = yes
+	}
+}
+
+su_forced_unity_effect = {
+	# this / root = player heir
+	save_scope_as = su_heir
+	every_sibling = {
+		limit = {
+			is_alive = yes
+			any_held_title = { tier >= tier_kingdom }
+		}
+		su_transfer_sibling_top_titles_to_root_effect = yes
+	}
+	add_prestige = su_forced_unity_prestige_gain
+	su_clear_pending_choice_effect = yes
+	trigger_event = su_events.1101
+}
+
+su_apply_soft_glue_to_sibling_effect = {
+	# this = sibling; root = heir
+	add_character_modifier = {
+		modifier = su_soft_glue_opinion_modifier
+		years = su_soft_glue_years
+	}
+	add_opinion = {
+		target = root
+		modifier = su_soft_glue_opinion
+	}
+	root = {
+		if = {
+			limit = {
+				can_add_hook = {
+					type = favor_hook
+					target = prev
+				}
+			}
+			add_hook = {
+				type = favor_hook
+				target = prev
+			}
+		}
+	}
+}
+
+su_apply_soft_glue_effect = {
+	save_scope_as = su_heir
+	every_sibling = {
+		limit = {
+			is_alive = yes
+			is_landed = yes
+		}
+		su_apply_soft_glue_to_sibling_effect = yes
+	}
+	set_variable = {
+		name = su_soft_glue_active
+		value = yes
+	}
+	set_variable = {
+		name = su_consolidate_pending
+		value = yes
+	}
+	set_variable = {
+		name = su_soft_glue_years_left
+		value = su_soft_glue_years
+	}
+	su_clear_pending_choice_effect = yes
+	trigger_event = su_events.1201
+	# Scheduled consolidate ask at soft-glue expiry (pulse is backup)
+	trigger_event = {
+		id = su_events.1301
+		years = su_soft_glue_years
+	}
+}
+
+su_clear_soft_glue_effect = {
+	every_sibling = {
+		limit = { has_character_modifier = su_soft_glue_opinion_modifier }
+		remove_character_modifier = su_soft_glue_opinion_modifier
+	}
+	if = {
+		limit = { has_variable = su_soft_glue_active }
+		remove_variable = su_soft_glue_active
+	}
+	if = {
+		limit = { has_variable = su_consolidate_pending }
+		remove_variable = su_consolidate_pending
+	}
+	if = {
+		limit = { has_variable = su_soft_glue_years_left }
+		remove_variable = su_soft_glue_years_left
+	}
+	remove_character_flag = su_consolidate_ask_fired
+}
+
+su_pay_consolidate_gold_cost_effect = {
+	# Approximate: base × 2 per contested kingdom+ title among siblings
+	if = {
+		limit = { gold >= su_consolidate_gold_base }
+		remove_short_term_gold = su_consolidate_gold_base
+		every_sibling = {
+			limit = {
+				is_alive = yes
+				any_held_title = { tier >= tier_kingdom }
+			}
+			root = {
+				if = {
+					limit = { gold >= su_consolidate_gold_base }
+					remove_short_term_gold = su_consolidate_gold_base
+				}
+			}
+		}
+	}
+}
+
+su_consolidate_gold_effect = {
+	save_scope_as = su_heir
+	su_pay_consolidate_gold_cost_effect = yes
+	every_sibling = {
+		limit = {
+			is_alive = yes
+			any_held_title = { tier >= tier_kingdom }
+		}
+		save_scope_as = su_sibling
+		add_gold = su_consolidate_gold_base
+		create_title_and_vassal_change = {
+			type = granted
+			save_scope_as = su_cons_change
+			add_claim_on_loss = no
+		}
+		every_held_title = {
+			limit = { tier >= tier_kingdom }
+			change_title_holder = {
+				holder = root
+				change = scope:su_cons_change
+			}
+		}
+		resolve_title_and_vassal_change = scope:su_cons_change
+		# Keep lesser land; ensure vassal under heir when possible
+		if = {
+			limit = {
+				is_landed = yes
+				NOT = { is_vassal_of = root }
+				NOT = { this = root }
+				highest_held_title_tier < root.highest_held_title_tier
+			}
+			create_title_and_vassal_change = {
+				type = swear_fealty
+				save_scope_as = su_vassal_change
+				add_claim_on_loss = no
+			}
+			change_liege = {
+				liege = root
+				change = scope:su_vassal_change
+			}
+			resolve_title_and_vassal_change = scope:su_vassal_change
+		}
+	}
+	su_clear_soft_glue_effect = yes
+}
+
+su_consolidate_vassalage_effect = {
+	save_scope_as = su_heir
+	add_prestige = {
+		value = {
+			value = su_consolidate_vassal_prestige
+			multiply = -1
+		}
+	}
+	every_sibling = {
+		limit = {
+			is_alive = yes
+			any_held_title = { tier >= tier_kingdom }
+		}
+		save_scope_as = su_sibling
+		create_title_and_vassal_change = {
+			type = conquered
+			save_scope_as = su_cons_change
+			add_claim_on_loss = no
+		}
+		every_held_title = {
+			limit = { tier >= tier_kingdom }
+			change_title_holder = {
+				holder = root
+				change = scope:su_cons_change
+			}
+		}
+		resolve_title_and_vassal_change = scope:su_cons_change
+		add_opinion = {
+			target = root
+			modifier = su_consolidate_vassal_opinion
+		}
+		if = {
+			limit = {
+				is_landed = yes
+				NOT = { is_vassal_of = root }
+				highest_held_title_tier < root.highest_held_title_tier
+			}
+			create_title_and_vassal_change = {
+				type = swear_fealty
+				save_scope_as = su_vassal_change
+				add_claim_on_loss = no
+			}
+			change_liege = {
+				liege = root
+				change = scope:su_vassal_change
+			}
+			resolve_title_and_vassal_change = scope:su_vassal_change
+		}
+	}
+	su_clear_soft_glue_effect = yes
+}
+
+su_consolidate_tyranny_effect = {
+	save_scope_as = su_heir
+	add_tyranny = su_consolidate_tyranny
+	add_character_modifier = {
+		modifier = su_consolidate_tyranny_hangover
+		years = 5
+	}
+	every_sibling = {
+		limit = {
+			is_alive = yes
+			any_held_title = { tier >= tier_kingdom }
+		}
+		save_scope_as = su_sibling
+		create_title_and_vassal_change = {
+			type = revoked
+			save_scope_as = su_cons_change
+			add_claim_on_loss = yes
+		}
+		every_held_title = {
+			limit = { tier >= tier_kingdom }
+			change_title_holder = {
+				holder = root
+				change = scope:su_cons_change
+			}
+		}
+		resolve_title_and_vassal_change = scope:su_cons_change
+		add_opinion = {
+			target = root
+			modifier = su_consolidate_tyranny_opinion
+		}
+		su_compensate_sibling_effect = yes
+	}
+	su_clear_soft_glue_effect = yes
+}
+
+su_on_pact_holder_death_effect = {
+	# this = dying pact holder
+	save_scope_as = su_dead
+	su_clear_pact_effect = yes
+	if = {
+		limit = {
+			exists = player_heir
+			player_heir = {
+				is_alive = yes
+				is_ai = no
+			}
+		}
+		player_heir = {
+			set_variable = {
+				name = su_unity_choice_pending
+				value = yes
+			}
+			# Short delay so vanilla succession can assign titles first
+			trigger_event = {
+				id = su_events.1001
+				days = 3
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			exists = primary_heir
+			primary_heir = {
+				is_alive = yes
+				is_ai = no
+			}
+		}
+		primary_heir = {
+			set_variable = {
+				name = su_unity_choice_pending
+				value = yes
+			}
+			trigger_event = {
+				id = su_events.1001
+				days = 3
+			}
+		}
+	}
+}
+
+su_try_fire_pending_unity_choice_effect = {
+	if = {
+		limit = { su_heir_qualifies_for_unity_choice = yes }
+		trigger_event = su_events.1001
+	}
+}
+
+su_soft_glue_yearly_tick_effect = {
+	if = {
+		limit = {
+			has_variable = su_soft_glue_active
+			has_variable = su_soft_glue_years_left
+		}
+		change_variable = {
+			name = su_soft_glue_years_left
+			subtract = 1
+		}
+		if = {
+			limit = {
+				var:su_soft_glue_years_left <= 0
+				has_variable = su_consolidate_pending
+				NOR = { has_character_flag = su_consolidate_ask_fired }
+			}
+			add_character_flag = {
+				flag = su_consolidate_ask_fired
+				years = 2
+			}
+			trigger_event = su_events.1301
+		}
+	}
+}

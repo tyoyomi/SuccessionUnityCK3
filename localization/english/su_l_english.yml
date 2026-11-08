@@ -1,0 +1,72 @@
+﻿l_english:
+ # Decisions
+ su_enable_dynasty_pact_decision:0 "Enable Dynasty Succession Pact"
+ su_enable_dynasty_pact_decision_desc:0 "Bind your dynasty to a Succession Pact. When you die, your player heir may choose Forced Unity or Soft Glue to keep the realm crown coherent — or decline and accept vanilla partition. The pact dies with you and must be renewed by the next dynasty head.\n\nYour living dynasty members must approve: each must have at least #V 25#! opinion of you."
+ su_enable_dynasty_pact_decision_tooltip:0 "Arm a one-generation Succession Pact for your death"
+ su_enable_dynasty_pact_decision_confirm:0 "Seal the Pact"
+ su_enable_dynasty_pact_decision_effect_tt:0 "The Dynasty Succession Pact is armed until your death"
+
+ su_revoke_dynasty_pact_decision:0 "Revoke Dynasty Succession Pact"
+ su_revoke_dynasty_pact_decision_desc:0 "Dissolve the Succession Pact while you still live. Your heir will not receive the Forced Unity / Soft Glue choice on your death."
+ su_revoke_dynasty_pact_decision_tooltip:0 "Clear the armed Succession Pact"
+ su_revoke_dynasty_pact_decision_confirm:0 "Revoke the Pact"
+ su_revoke_dynasty_pact_decision_effect_tt:0 "The Dynasty Succession Pact is cleared"
+
+ # Tooltips — SU11 approval gate
+ su_tt_can_afford_pact_prestige:0 "You have at least #V 250#! Prestige"
+ su_tt_dynasty_approves_pact:0 "Every living dynasty member has at least #V 25#! Opinion of you"
+ su_tt_no_pact_objectors:0 "No living dynasty members object to the Pact (Opinion below #V 25#!)"
+ su_tt_forced_unity_available:0 "You hold a kingdom or empire crown to unify"
+ su_tt_forced_unity_no_crown:0 "No kingdom or empire crown to unify"
+
+ # Events
+ su_events.1001.t:0 "The Succession Pact"
+ su_events.1001.desc:0 "Your predecessor bound the dynasty to a Succession Pact. Partition has already begun to scatter the realm. How will you answer?"
+ su_events.1001.a:0 "Forced Unity — reclaim the crowns, pay the family"
+ su_events.1001.a_tt:0 "Take kingdom and empire titles from siblings. Compensate them with lesser land or gold so none are left titleless."
+ su_events.1001.b:0 "Soft Glue — buy years of peace"
+ su_events.1001.b_tt:0 "Pacify partition siblings with opinion, hooks, and stability for five years. You will later be asked whether to consolidate contested crowns."
+ su_events.1001.c:0 "Decline — let partition stand"
+ su_events.1001.c_tt:0 "Clear the Pact choice and accept the vanilla aftermath."
+
+ su_events.1101.t:0 "Forced Unity"
+ su_events.1101.desc:0 "The top crowns sit with you once more. Siblings who lost a kingdom or empire kept lesser titles where they could, or received land or gold so the family is not cast into poverty."
+ su_events.1101.a:0 "The realm holds."
+
+ su_events.1201.t:0 "Soft Glue"
+ su_events.1201.desc:0 "You soothe your siblings with favor and patience. For five years they lean toward peace. When that calm ends — or when you choose to press earlier — you may consolidate contested crowns for gold, vassalage, or tyranny."
+ su_events.1201.a:0 "Hold the peace."
+
+ su_events.1301.t:0 "Consolidate the Crowns?"
+ su_events.1301.desc:0 "Soft Glue has run its course, or the moment feels right. Contested kingdom and empire titles may still sit with siblings. Will you gather them now?"
+ su_events.1301.a:0 "Consolidate — choose how to pay"
+ su_events.1301.a_tt:0 "Open the payment fork: gold, vassalage, or tyranny."
+ su_events.1301.b:0 "Leave titles as they are"
+ su_events.1301.b_tt:0 "Clear Soft Glue and the consolidate ask. Titles stay where partition left them."
+
+ su_events.1302.t:0 "The Price of Unity"
+ su_events.1302.desc:0 "How will you gather the contested crowns?"
+ su_events.1302.a:0 "Gold — buy their assent"
+ su_events.1302.a_tt:0 "Pay gold per contested crown. Siblings transfer kingdom/empire titles and keep lesser land."
+ su_events.1302.b:0 "Vassalage — bring them under you"
+ su_events.1302.b_tt:0 "Spend Prestige. Transfer contested crowns to you; siblings remain landed vassals where possible."
+ su_events.1302.c:0 "Tyranny — take them"
+ su_events.1302.c_tt:0 "Force the transfers. Gain Tyranny and sibling hatred; compensate so they are not left titleless."
+ su_events.1302.d:0 "Cancel"
+ su_events.1302.d_tt:0 "Leave Soft Glue in place until it expires naturally."
+
+ su_events.1401.t:0 "Pact Sealed"
+ su_events.1401.desc:0 "The dynasty has approved your Succession Pact. When you die, your heir will face the choice. The next dynasty head must renew it for the generation after."
+ su_events.1401.a:0 "So be it."
+
+ # Modifiers
+ su_soft_glue_opinion_modifier:0 "Soft Glue"
+ su_soft_glue_opinion_modifier_desc:0 "Pacified by a Succession Pact Soft Glue arrangement."
+ su_consolidate_tyranny_hangover:0 "Tyrannical Consolidation"
+ su_consolidate_tyranny_hangover_desc:0 "Recent forced reclaim of partition crowns still stains the court."
+
+ # Opinion modifiers
+ su_soft_glue_opinion:0 "Succession Soft Glue"
+ su_compensated_sibling_opinion:0 "Compensated in Succession"
+ su_consolidate_vassal_opinion:0 "Pressed into Vassalage"
+ su_consolidate_tyranny_opinion:0 "Crowns Seized by Tyranny"

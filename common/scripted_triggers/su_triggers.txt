@@ -1,0 +1,91 @@
+# Succession Unity — scripted triggers
+
+su_is_dynasty_head_player = {
+	is_alive = yes
+	is_ai = no
+	exists = dynasty
+	is_dynast = yes
+}
+
+su_member_approves_pact_of_root = {
+	OR = {
+		this = root
+		AND = {
+			is_alive = yes
+			opinion = {
+				target = root
+				value >= su_pact_dynasty_opinion_threshold
+			}
+		}
+	}
+}
+
+# SU11 — every living dynasty member has opinion of head ≥ threshold (self always passes)
+su_dynasty_approves_pact = {
+	exists = dynasty
+	dynasty = {
+		any_dynasty_member = {
+			count = all
+			su_member_approves_pact_of_root = yes
+		}
+	}
+}
+
+su_dynasty_has_pact_objector = {
+	exists = dynasty
+	dynasty = {
+		any_dynasty_member = {
+			is_alive = yes
+			NOT = { this = root }
+			NOT = {
+				opinion = {
+					target = root
+					value >= su_pact_dynasty_opinion_threshold
+				}
+			}
+		}
+	}
+}
+
+su_can_enable_pact = {
+	su_is_dynasty_head_player = yes
+	NOT = { has_variable = su_pact_active }
+	prestige >= su_pact_prestige_cost
+	su_dynasty_approves_pact = yes
+}
+
+su_is_partition_sibling_of_heir = {
+	is_alive = yes
+	NOT = { this = root }
+	OR = {
+		is_sibling_of = root
+		is_close_family_of = root
+	}
+	is_landed = yes
+}
+
+su_forced_unity_needed = {
+	highest_held_title_tier >= tier_kingdom
+	any_sibling = {
+		is_alive = yes
+		any_held_title = {
+			tier >= tier_kingdom
+		}
+	}
+}
+
+su_heir_qualifies_for_unity_choice = {
+	is_alive = yes
+	is_ai = no
+	has_variable = su_unity_choice_pending
+	NOT = { has_character_flag = su_unity_choice_done }
+}
+
+su_has_contested_top_titles_among_siblings = {
+	any_sibling = {
+		is_alive = yes
+		any_held_title = {
+			tier >= tier_kingdom
+		}
+	}
+}
