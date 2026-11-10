@@ -1,0 +1,150 @@
+namespace = su_events
+
+# Heir choice after pact-holder death
+su_events.1001 = {
+	type = character_event
+	title = su_events.1001.t
+	desc = su_events.1001.desc
+	theme = dynasty
+
+	trigger = {
+		su_heir_qualifies_for_unity_choice = yes
+	}
+
+	immediate = {
+		# Idempotent: mark handled when any option resolves
+	}
+
+	option = {
+		name = su_events.1001.a
+		# Hidden when below kingdom (no crown to unify). Soft Glue / Decline remain.
+		trigger = {
+			custom_tooltip = {
+				text = su_tt_forced_unity_available
+				highest_held_title_tier >= tier_kingdom
+			}
+		}
+		custom_tooltip = su_events.1001.a_tt
+		su_forced_unity_effect = yes
+	}
+
+	option = {
+		name = su_events.1001.b
+		custom_tooltip = su_events.1001.b_tt
+		su_apply_soft_glue_effect = yes
+	}
+
+	option = {
+		name = su_events.1001.c
+		custom_tooltip = su_events.1001.c_tt
+		su_clear_pending_choice_effect = yes
+	}
+}
+
+# Forced Unity summary
+su_events.1101 = {
+	type = character_event
+	title = su_events.1101.t
+	desc = su_events.1101.desc
+	theme = dynasty
+
+	option = {
+		name = su_events.1101.a
+	}
+}
+
+# Soft Glue applied toast
+su_events.1201 = {
+	type = character_event
+	title = su_events.1201.t
+	desc = su_events.1201.desc
+	theme = diplomacy
+
+	option = {
+		name = su_events.1201.a
+	}
+}
+
+# Consolidate ask (expiry / mid-glue)
+su_events.1301 = {
+	type = character_event
+	title = su_events.1301.t
+	desc = su_events.1301.desc
+	theme = dynasty
+
+	trigger = {
+		OR = {
+			has_variable = su_consolidate_pending
+			has_variable = su_soft_glue_active
+		}
+	}
+
+	immediate = {
+		add_character_flag = {
+			flag = su_consolidate_ask_fired
+			years = 2
+		}
+	}
+
+	option = {
+		name = su_events.1301.a
+		trigger = {
+			su_has_contested_top_titles_among_siblings = yes
+		}
+		custom_tooltip = su_events.1301.a_tt
+		trigger_event = su_events.1302
+	}
+
+	option = {
+		name = su_events.1301.b
+		custom_tooltip = su_events.1301.b_tt
+		su_clear_soft_glue_effect = yes
+	}
+}
+
+# Payment fork
+su_events.1302 = {
+	type = character_event
+	title = su_events.1302.t
+	desc = su_events.1302.desc
+	theme = dynasty
+
+	option = {
+		name = su_events.1302.a
+		trigger = {
+			gold >= su_consolidate_gold_base
+		}
+		custom_tooltip = su_events.1302.a_tt
+		su_consolidate_gold_effect = yes
+	}
+
+	option = {
+		name = su_events.1302.b
+		custom_tooltip = su_events.1302.b_tt
+		su_consolidate_vassalage_effect = yes
+	}
+
+	option = {
+		name = su_events.1302.c
+		custom_tooltip = su_events.1302.c_tt
+		su_consolidate_tyranny_effect = yes
+	}
+
+	option = {
+		name = su_events.1302.d
+		custom_tooltip = su_events.1302.d_tt
+		# Leave Soft Glue running until natural expiry
+	}
+}
+
+# Pact enabled confirmation
+su_events.1401 = {
+	type = character_event
+	title = su_events.1401.t
+	desc = su_events.1401.desc
+	theme = dynasty
+
+	option = {
+		name = su_events.1401.a
+	}
+}

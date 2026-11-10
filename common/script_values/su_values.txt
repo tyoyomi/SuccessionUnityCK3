@@ -1,0 +1,23 @@
+# Succession Unity — tunable script values (v0.1.0)
+
+su_pact_prestige_cost = 250
+su_pact_dynasty_opinion_threshold = 25
+
+su_soft_glue_years = 5
+su_soft_glue_opinion = 40
+su_soft_glue_scheme_resistance = 15
+
+su_sibling_gold_comp = 150
+su_forced_unity_prestige_gain = 100
+su_compensated_sibling_opinion = 15
+su_compensated_sibling_years = 10
+
+su_consolidate_gold_base = 200
+su_consolidate_vassal_prestige = 150
+su_consolidate_tyranny = 30
+su_consolidate_vassal_opinion_hit = -10
+su_consolidate_vassal_opinion_years = 5
+
+# Tier weights for gold compensation / consolidate cost
+su_tier_weight_kingdom = 2
+su_tier_weight_empire = 3

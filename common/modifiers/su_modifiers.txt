@@ -1,0 +1,17 @@
+# Succession Unity — character modifiers
+
+@su_soft_glue_scheme_resistance = 15
+@su_soft_glue_stress = -0.1
+
+su_soft_glue_opinion_modifier = {
+	icon = diplomacy_positive
+	enemy_hostile_scheme_success_chance_add = -15
+	enemy_hostile_scheme_phase_duration_add = @su_soft_glue_scheme_resistance
+	stress_gain_mult = @su_soft_glue_stress
+}
+
+su_consolidate_tyranny_hangover = {
+	icon = prestige_negative
+	general_opinion = -5
+	monthly_prestige = -0.5
+}

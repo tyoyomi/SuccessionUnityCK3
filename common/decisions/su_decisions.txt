@@ -1,0 +1,86 @@
+@su_pact_prestige_cost = 250
+
+su_enable_dynasty_pact_decision = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_dynasty_house.dds"
+	}
+	decision_group_type = su_unity
+	desc = su_enable_dynasty_pact_decision_desc
+	selection_tooltip = su_enable_dynasty_pact_decision_tooltip
+	confirm_text = su_enable_dynasty_pact_decision_confirm
+
+	ai_check_interval = 0
+
+	is_shown = {
+		su_is_dynasty_head_player = yes
+		NOT = { has_variable = su_pact_active }
+	}
+
+	is_valid = {
+		custom_tooltip = {
+			text = su_tt_can_afford_pact_prestige
+			prestige >= su_pact_prestige_cost
+		}
+		custom_tooltip = {
+			text = su_tt_dynasty_approves_pact
+			su_dynasty_approves_pact = yes
+		}
+		custom_tooltip = {
+			text = su_tt_no_pact_objectors
+			NOT = { su_dynasty_has_pact_objector = yes }
+		}
+	}
+
+	cost = {
+		prestige = @su_pact_prestige_cost
+	}
+
+	effect = {
+		custom_tooltip = su_enable_dynasty_pact_decision_effect_tt
+		su_enable_pact_effect = yes
+		trigger_event = su_events.1401
+	}
+
+	ai_potential = {
+		always = no
+	}
+
+	ai_will_do = {
+		base = 0
+	}
+}
+
+su_revoke_dynasty_pact_decision = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_dynasty_house.dds"
+	}
+	decision_group_type = su_unity
+	desc = su_revoke_dynasty_pact_decision_desc
+	selection_tooltip = su_revoke_dynasty_pact_decision_tooltip
+	confirm_text = su_revoke_dynasty_pact_decision_confirm
+
+	ai_check_interval = 0
+
+	is_shown = {
+		is_alive = yes
+		is_ai = no
+		has_variable = su_pact_active
+	}
+
+	is_valid = {
+		always = yes
+	}
+
+	effect = {
+		custom_tooltip = su_revoke_dynasty_pact_decision_effect_tt
+		su_clear_pact_effect = yes
+	}
+
+	ai_potential = {
+		always = no
+	}
+
+	ai_will_do = {
+		base = 0
+	}
+}

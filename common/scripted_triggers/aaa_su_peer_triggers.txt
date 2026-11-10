@@ -1,0 +1,6 @@
+# Soft peer defaults (LIOS). Peers may override later files to always = yes.
+# Unused in v0.1.0 gameplay logic — reserved for optional Soft Glue bonus later.
+
+su_ss_loaded_trigger = {
+	always = no
+}
