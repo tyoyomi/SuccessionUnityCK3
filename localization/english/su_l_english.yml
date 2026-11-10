@@ -12,6 +12,9 @@
  su_revoke_dynasty_pact_decision_confirm:0 "Revoke the Pact"
  su_revoke_dynasty_pact_decision_effect_tt:0 "The Dynasty Succession Pact is cleared"
 
+ # Decision group
+ decision_group_type_su_unity:0 "Succession Unity"
+
  # Tooltips — SU11 approval gate
  su_tt_can_afford_pact_prestige:0 "You have at least #V 250#! Prestige"
  su_tt_dynasty_approves_pact:0 "Every living dynasty member has at least #V 25#! Opinion of you"

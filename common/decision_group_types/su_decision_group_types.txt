@@ -1,0 +1,7 @@
+# Succession Unity — custom decision group (additive; does not replace vanilla major)
+
+su_unity = {
+	sort_order = 190
+	gui_tags = { big_button }
+	important_decision_group = yes
+}
